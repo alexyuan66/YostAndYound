@@ -1,0 +1,169 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} 
+
+
+{% block content %}
+    <!-- add a search bar to search for objects. The route is /search-objects -->
+    <script>
+        function handleLost(response) {
+            console.log(response); 
+            $('#lostcards').html(response);
+        }
+
+        function handleFound(response) {
+            $('#foundcards').html(response);
+        }
+
+        let request = null;
+  
+        function getResults() {
+            let query = $('#query').val();
+            if(!query) {
+                query = "";
+            }
+            query = encodeURIComponent(query);
+            let place = $('#place').val();
+            if(!place) {
+                place = "";
+            }
+            place = encodeURIComponent(place);
+            let classifier = $('#classifier').val();
+            if(!classifier) {
+                classifier = "";
+            }
+            classifier = encodeURIComponent(classifier);
+            let date = $('#date').val();
+            if(!date) {
+                date = "";
+            }
+            date = encodeURIComponent(date);
+            let lost_url = '/search-lost-objects?query=' + query + '&place=' + place 
+            + '&classifier=' + classifier + '&lost_date=' + date; 
+            request = $.ajax(
+            {
+                type: 'POST',
+                url: lost_url,
+                success: handleLost
+            }
+            );
+            let found_url = '/search-found-objects?query=' + query + '&place=' + place 
+            + '&classifier=' + classifier + '&lost_date=' + date; 
+            request = $.ajax(
+            {
+                type: 'POST',
+                url: found_url,
+                success: handleFound
+            }
+            );
+        }
+  
+        function start()
+        {
+            getResults(); 
+            $('.search-bar').on('input', getResults); 
+            $('.search-item').on('input', getResults); 
+        }
+        
+        $('document').ready(start);
+    </script>
+    <div class="search-container">
+        <form id = "objects_form" method="POST" class="needs-validation" autocomplete="off" onsubmit="return false;">
+            <div class="form-group">
+                <div class="search-bar">
+                    <input id="query" type="text" placeholder="Search keywords" name="query" class="form-control" list="object_list">
+                </div>
+                <div class="advanced-search">
+                    
+                        <datalist id="object_list">
+                            {% for lost_object in lost_objects %}
+                                <option value="{{ lost_object.description }}">
+                            {% endfor %}
+                            {% for found_object in found_objects %}
+                                <option value="{{ found_object.description }}">
+                            {% endfor %}
+                        </datalist>
+                    
+                    
+                        <select id="place" name="place" class="search-item">
+                            <option value="">Location</option>
+                            {%  for key, value in places.items() %}
+                                <optgroup label="{{ key }}">
+                                    {% for place in value %}
+                                        <option value="{{ place }}">{{ place }}</option>
+                                    {%  endfor %}
+                                </optgroup>
+                            {%  endfor %}
+                        </select>
+                    
+                    
+                        <select id="classifier" name="classifier" class="search-item">
+                            <option value="">Classifier</option>
+                            {%  for key, value in classifiers.items() %}
+                                <optgroup label="{{ key }}">
+                                    {% for class in value %}
+                                        <option value="{{ class }}">{{ class }}</option>
+                                    {%  endfor %}
+                                </optgroup>
+                            {%  endfor %}
+                        </select>
+                    
+                    
+                        <input id="date" type="date" name="lost_date" class="search-item">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- show all the lost objects. This was passed in as `lost_objects`. -->
+    <input type="checkbox" id="switch" aria-hidden="true">
+    <div style="display: flex; justify-content: center;">
+        <div class="toggle-label-container">
+            <div id="toggle-active"></div>
+            <label id="found-label" class="toggle-label" for="switch" aria-hidden="true">Found Items</label>
+            <label id="lost-label" class="toggle-label" for="switch" aria-hidden="true">Lost Items</label>
+        </div>
+    </div>
+    
+        <div id="lostcards" class="card-container my-card-container"></div>
+        
+            <!-- show all the found objects. This was passed in as `found_objects`. -->
+        <div id="foundcards" class="card-container my-card-container"></div>
+    </div>
+
+
+    <script>
+        const switchEl = document.getElementById('switch');
+        const lostCardsEl = document.getElementById('lostcards');
+        const foundCardsEl = document.getElementById('foundcards');
+        const foundLabelEl = document.getElementById('found-label');
+        const lostLabelEl = document.getElementById('lost-label');
+        const toggleActiveEl = document.getElementById('toggle-active');
+
+        foundCardsEl.style.display = 'flex';
+        lostCardsEl.style.display = 'none';
+        foundLabelEl.classList.add('active-label');
+    
+
+    
+        switchEl.addEventListener('change', function() {
+
+          if (foundCardsEl.style.display == 'flex') {
+
+            foundCardsEl.style.display = 'none';
+            lostCardsEl.style.display = 'flex';
+            
+            toggleActiveEl.style.transform = 'translateX(100%)';
+            foundLabelEl.classList.remove('active-label');
+            lostLabelEl.classList.add('active-label');
+          } else {
+
+            lostCardsEl.style.display = 'none';
+            foundCardsEl.style.display = 'flex';
+
+            toggleActiveEl.style.transform = 'translateX(0%)';
+            lostLabelEl.classList.remove('active-label');
+            foundLabelEl.classList.add('active-label');
+          }
+        });
+    
+      </script>
+{% endblock %}

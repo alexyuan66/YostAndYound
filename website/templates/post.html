@@ -1,0 +1,166 @@
+{% extends "base.html" %} {% block title %}Post a Lost Item{% endblock %} 
+
+
+{% block postform %}
+
+    <!-- Add a title saying "Post a Lost Item" -->
+    <!-- <h1 align="center">Post a Lost Item</h1> -->
+    <div class="main-container">
+        <div class="form-container">
+            <input type="checkbox" id="chk" aria-hidden="true">
+            
+            
+            <div class="found-form">
+                <label class="form-label" for="chk" aria-hidden="true">Found</label>
+                <form method="POST" action="/post_found" class="needs-validation" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <!-- <label class="input-label" for="classifier">Classifier:</label> -->
+                        <select class="form-item" name="classifier" class="form-control" required>
+                            <option value="">Select a classifier*</option>
+                            {%  for key, value in classifiers.items() %}
+                                <optgroup label="{{ key }}">
+                                    {% for class in value %}
+                                        <option value="{{ class }}">{{ class }}</option>
+                                    {%  endfor %}
+                                </optgroup>
+                            {%  endfor %}
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a classifier.
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <!-- <label class="input-label" for="found_date">Date:</label> -->
+                        <input class="form-item" type="date" name="found_date" class="form-control" required />
+                        <div class="invalid-feedback">
+                            Please provide a valid date.
+                        </div>
+                    </div>
+                    
+                    <style>
+                        .form-item[type="date"]::-webkit-calendar-picker-indicator {
+                            margin-left: 0;
+                            /* mm/dd/yyyy should be on the left */
+                            order: -1;
+                        }
+                    </style>
+                        
+                        
+        
+                    <div class="form-group">
+                        <!-- <label class="input-label" for="place">Place:</label> -->
+                        <select class="form-item" name="place" class="form-control" required>
+                            <option value="">Select a location*</option>
+                            {%  for key, value in places.items() %}
+                                <optgroup label="{{ key }}">
+                                    {% for place in value %}
+                                        <option value="{{ place }}">{{ place }}</option>
+                                    {%  endfor %}
+                                </optgroup>
+                            {%  endfor %}
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a place.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <!-- <label class="input-label" for="description">Description:</label> -->
+                        <textarea class="form-item" name="description" class="form-control" placeholder=" Description*" required></textarea>
+                        <div class="invalid-feedback">
+                            Please provide a description of the found item.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-item img-item">
+                            <p style="margin: 0 25px;">Image:</p>
+                            <input type="file" class="form-control-file" accept="image/*" capture="camera" name="file" placeholder="Image" />
+                        </div>
+                    </div>
+
+                    <button class="form-button" type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+
+            <div class="lost-form">
+                <form method="POST" action="/post_loss" class="needs-validation" enctype="multipart/form-data">
+                    <label class="form-label" for="chk" aria-hidden="true">Lost</label>
+                    <div class="form-group">
+                        <!-- <label for="classifier">Classifier:</label> -->
+                        <select class="form-item" name="classifier" class="form-control" required>
+                            <option value="">Select a classifier*</option>
+                            {%  for key, value in classifiers.items() %}
+                                <optgroup label="{{ key }}">
+                                    {% for class in value %}
+                                        <option value="{{ class }}">{{ class }}</option>
+                                    {%  endfor %}
+                                </optgroup>
+                            {%  endfor %}
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a classifier.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <!-- <label for="lost_date">Date:</label> -->
+                        <input class="form-item" type="date" name="lost_date" class="form-control" required />
+                        <!-- <div class="input-group date" id ="datepicker">
+                            <input type="text" class="form-control">
+                            <span class="input-group-text bg-white">
+                                <i class="fa fa-calendar"></i>
+                            </span>
+                        </div>  -->
+                        <div class="invalid-feedback">
+                            Please provide a valid date.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <!-- <label for="place">Place:</label> -->
+                        <select class="form-item" name="place" class="form-control" required>
+                            <option value="">Select a location*</option>
+                            {%  for key, value in places.items() %}
+                                <optgroup label="{{ key }}">
+                                    {% for place in value %}
+                                        <option value="{{ place }}">{{ place }}</option>
+                                    {%  endfor %}
+                                </optgroup>
+                            {%  endfor %}
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a place.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <!-- <label for="description">Description:</label> -->
+                        <textarea class="form-item" name="description" class="form-control" placeholder=" Description*" required></textarea>
+                        <div class="invalid-feedback">
+                            Please provide a description of the lost item.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-item img-item">
+                            <p style="margin: 0 25px;">Image:</p>
+                            <input type="file"  accept="image/*" capture="camera" class="form-control-file" name="file" placeholder="Image" />
+                        </div>
+                    </div>
+
+
+                    <button class="form-button btn-light" type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $('#datepicker').datetimepicker({
+                format: 'MM-DD-YYYY'
+            });
+        });
+    </script>
+{% endblock %}
